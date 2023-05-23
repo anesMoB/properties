@@ -1,0 +1,56 @@
+server:
+  port: 7777
+
+logging:
+  level:
+    org:
+      springframework:
+        cloud:
+          gateway: TRACE
+eureka:
+  client:
+    fetch-registry: true
+    register-with-eureka: true
+    service-url:
+      defaultZone: http://localhost:8761/eureka
+spring:
+  main:
+    web-application-type: reactive
+  cloud:
+    gateway:
+      routes:
+        - id: route1
+          predicates:
+            - Path=/ms-admin-commands/**
+          filters:
+            - RewritePath=/ms-admin-commands/(?<s>.*), /${s}
+#            - name: CircuitBreaker
+#              args:
+#                name: FallBabk-formation
+#                fallbackuri: forward:/defaultFormations
+          uri: lb://ms-admin-commands
+
+        - id: route2
+          predicates:
+            - Path=/ms-admin-queries/**
+          filters:
+            - RewritePath=/ms-admin-queries/(?<s>.*), /${s}
+
+          uri: lb://ms-admin-queries
+#
+#        - id: route3
+#          predicates:
+#            - Path=/ms-bourse/**
+#          filters:
+#            - RewritePath=/ms-bourse/(?<s>.*), /${s}
+#
+#          uri: lb://ms-bourse
+#
+#        - id: route4
+#          predicates:
+#            - Path=/ms-formation-mysql/**
+#          filters:
+#            - RewritePath=/ms-formation-mysql/(?<s>.*), /${s}
+#
+#          uri: lb://ms-formation-mysql
+#
